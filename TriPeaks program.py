@@ -412,12 +412,9 @@ class MidFrame(tk.Frame):
         confirm_quit = tk.messagebox.askquestion('Confirm', 'Are you sure you want to quit?')
         if confirm_quit == 'yes':
             if TopFrame.local_score != 0:
-              try: 
-                _file = open("scores.txt", "a")
-              except IOError:
-                _file = open('scores.txt', 'w')
-              _file.write('\n' + str(User.current_user) + ':' + str(TopFrame.local_score))
-              _file.close()
+                _file = open("scores", "a")
+                _file.write('\n' + str(User.current_user) + ':' + str(TopFrame.local_score))
+                _file.close()
             quit_game()
         else:
             pass
@@ -428,7 +425,7 @@ class MidFrame(tk.Frame):
         confirm_logout = tk.messagebox.askquestion('Confirm', 'Are you sure you want to log out?')
         if confirm_logout == 'yes':
             if TopFrame.local_score != 0:
-                _file = open("scores.txt", "a")
+                _file = open("scores", "a")
                 _file.write('\n' + str(User.current_user) + ':' + str(TopFrame.local_score))
                 _file.close()
 
@@ -449,6 +446,8 @@ class MidFrame(tk.Frame):
 
             MidFrame.current_card = MidFrame.cards_in_hand[-1]
             MidFrame.local_current = MidFrame.current_card
+            print(MidFrame.all_cards_bottom)
+            print(MidFrame.current_card)
             MidFrame.all_cards_bottom[MidFrame.current_card].switch()
 
             MidFrame.all_cards_bottom[MidFrame.current_card].place(relwidth=width, relheight=height,
@@ -458,7 +457,7 @@ class MidFrame(tk.Frame):
             del MidFrame.all_cards_bottom[MidFrame.cards_in_hand[0]]
             MidFrame.cards_in_hand.remove(MidFrame.current_card)
             if TopFrame.local_score != 0:
-                _file = open("scores.txt", "a")
+                _file = open("scores", "a")
                 _file.write('\n' + str(User.current_user) + ':' + str(TopFrame.local_score))
                 _file.close()
             TopFrame.local_score = 0
@@ -637,20 +636,14 @@ class User(tk.Tk):
         self.score_10.place(relwidth=0.4, relheight=0.1,
                             relx=0.55, rely=0.65)
 
-        try:
-          _file = open("scores.txt", 'r')
-        except IOError:
-          print("cant find file")
+        _file = open("scores", 'r+')
         contents = _file.readlines()
-        print('this is the contents')
-        print(contents)
         for data in contents:
             item = data.strip('\n')
             try:
                 user_scores[item.split(':')[0]].append(int(item.split(":")[1]))
             except KeyError:
-                # user_scores[item.split(':')[0]] = [int(item.split(':')[1])]
-                pass
+                user_scores[item.split(':')[0]] = [int(item.split(':')[1])]
 
         for key in user_scores:
             user_scores[key] = sorted(user_scores[key], reverse=True)
